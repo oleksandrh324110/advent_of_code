@@ -42,10 +42,6 @@ int main() {
       i = -1;
     }
 
-    for (int n : vec)
-      std::cout << n << ' ';
-    std::cout << '\n';
-
     count += is_safe;
   }
 
