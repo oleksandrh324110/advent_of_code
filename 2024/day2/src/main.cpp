@@ -12,40 +12,37 @@ int main() {
   std::string str;
   while (std::getline(file, str))
     data.emplace_back(split(str, " "));
-
-  size_t count = 0;
-  for (auto vec : data) {
-    if (vec.size() < 5)
-      continue;
-
+  size_t result = 0;
+  for (auto &vec : data) {
     bool is_safe = true;
     bool was_one_removed = false;
 
-    const bool is_asc = (vec[0] < vec[1] && vec[1] < vec[2]) ||
-                        (vec[2] < vec[3] && vec[3] < vec[4]);
+    bool is_asc = (vec[0] < vec[1] && vec[1] < vec[2]) ||
+                  (vec[2] < vec[3] && vec[3] < vec[4]);
 
-    for (int i = 0; i < vec.size() - 1; i++) {
-      if (are_safe(vec[i], vec[i + 1], is_asc))
-        continue;
+    for (size_t i = 0; i < vec.size() - 1; i++) {
+      if (!are_safe(vec[i], vec[i + 1], is_asc)) {
+        if (was_one_removed) {
+          is_safe = false;
+          break;
+        }
 
-      if (was_one_removed) {
-        is_safe = false;
-        break;
+        if (i == vec.size() - 2)
+          vec.erase(vec.end());
+        else if (are_safe(vec[i + 1], vec[i + 2], is_asc))
+          vec.erase(vec.begin() + i);
+        else
+          vec.erase(vec.begin() + i + 1);
+
+        was_one_removed = true;
+        i = -1;
       }
-
-      if (i == 0)
-        vec.erase(vec.begin() + !are_safe(vec[i + 1], vec[i + 2], is_asc));
-      else
-        vec.erase(vec.begin() + i + 1);
-
-      was_one_removed = true;
-      i = -1;
     }
 
-    count += is_safe;
+    result += is_safe;
   }
 
-  std::cout << count << '\n';
+  std::cout << result << '\n';
 }
 
 bool are_safe(int a, int b, bool is_asc) {
